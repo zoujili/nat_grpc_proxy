@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package chat;
+
+service Chat {
+	rpc Say (stream RestEvent) returns (stream PushEvent);
+}
+
+message RestEvent {
+	string clientID = 1;
+	string message  =2 ;
+}
+
+message PushEvent {
+	string clientID = 1;
+	string message = 2;
+}
