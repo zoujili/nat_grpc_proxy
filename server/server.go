@@ -9,7 +9,6 @@ import (
 	pb "nats_grpc_proxy/proto"
 	"nats_grpc_proxy/queue"
 	"net"
-	"time"
 )
 
 type Server struct {
@@ -62,6 +61,12 @@ func (s *Server) Push() {
 	}
 }
 
+func (c *Server) Consume(){
+	for {
+		m := c.Queue.PopConsumeQueue()
+		log.Printf("Success Receive Process: %s", m)
+	}
+}
 
 func NewServer() {
 	lis, err := net.Listen("tcp", ":9092")
@@ -76,19 +81,7 @@ func NewServer() {
 	pb.RegisterChatServer(s, my)
 
 	go my.Push()
-
-	go func() {
-		time.Sleep(20 * time.Second)
-		my.Queue.PushProduceQueue(pb.PushEvent{ClientID:"test",Message:"jili"})
-	}()
-
-	go func() {
-		for {
-			m := my.Queue.PopConsumeQueue()
-			log.Printf("Success Receive Process: %s", m)
-		}
-
-	}()
+	go my.Consume()
 
 	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {

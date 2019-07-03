@@ -9,8 +9,9 @@ import (
 	"log"
 	pb "nats_grpc_proxy/proto"
 	"nats_grpc_proxy/queue"
-	"time"
 )
+
+var ClientID string
 
 type Client struct {
 	Queue queue.ClientQueue
@@ -59,17 +60,30 @@ func (c *Client )Push(stream pb.Chat_SayClient) {
 
 }
 
+func (c *Client) Consume(){
+	for {
+		m := c.Queue.PopConsumeQueue()
+		log.Printf("Success Receive Process: %s", m)
+	}
+
+}
+
+
+
+
+
 func NewClient() {
 	addr := flag.String("a", "127.0.0.1:9092", "grpc server address")
 	flag.Parse()
 	// init important structures
 	//rand.Seed(time.Now().UTC().UnixNano())
 	//name := fmt.Sprintf("%d", rand.Intn(50))
-	clientID := "test"
+	ClientID := "test"
 
 	q := NewClientNATSQueue()
 	my := newClient()
 	my.Queue = q
+
 
 
 	// Setup a connection with the server
@@ -85,21 +99,9 @@ func NewClient() {
 	if err != nil {
 		log.Printf("create steam to server faile %s", err)
 	}
-	go my.RegisterAndSay(stream, clientID)
+	go my.RegisterAndSay(stream, ClientID)
 	go my.Push(stream)
-
-	go func() {
-		time.Sleep(6 * time.Second)
-		my.Queue.PushProduceQueue(pb.RestEvent{ClientID:"hello",Message:"tom"})
-	}()
-
-	go func() {
-		for {
-			m := my.Queue.PopConsumeQueue()
-			log.Printf("Success Receive Process: %s", m)
-		}
-
-	}()
+    go my.Consume()
 }
 
 
