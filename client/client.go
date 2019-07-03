@@ -68,23 +68,18 @@ func (c *Client) Consume(){
 
 }
 
-
-
-
-
 func NewClient() {
 	addr := flag.String("a", "127.0.0.1:9092", "grpc server address")
 	flag.Parse()
-	// init important structures
-	//rand.Seed(time.Now().UTC().UnixNano())
-	//name := fmt.Sprintf("%d", rand.Intn(50))
+
 	ClientID := "test"
 
-	q := NewClientNATSQueue()
+	q,err := NewClientNATSQueue()
+	if err !=nil {
+		log.Fatalf("failed to connect with nats: %s", err)
+	}
 	my := newClient()
 	my.Queue = q
-
-
 
 	// Setup a connection with the server
 	conn, err := grpc.Dial(*addr, grpc.WithInsecure())

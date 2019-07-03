@@ -47,11 +47,11 @@ func  (n *NATSQueue) PushProduceQueue(event  pb.PushEvent) {
 
 
 
-func NewNATSQueue() queue.ServiceQueue{
+func NewNATSQueue() (queue.ServiceQueue,error){
 	con, err := nats.Connect(nats_grpc_proxy.ServerNatDefaultURL)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return nil,err
 	}
 	n:=&NATSQueue{
 		consume: make(chan pb.RestEvent,10),
@@ -63,6 +63,6 @@ func NewNATSQueue() queue.ServiceQueue{
 	_, err = con.Subscribe(nats_grpc_proxy.ServerNATSSubChannel, func(m *nats.Msg) {
 		n.PushProduceQueue(pb.PushEvent{ClientID:"test",Message:string(m.Data)})
 	})
-    return  n
+    return  n,nil
 }
 

@@ -74,7 +74,10 @@ func NewServer() {
 		log.Fatalf("failed to listen: %s", err)
 	}
 	s := grpc.NewServer()
-	q := NewNATSQueue()
+	q,err := NewNATSQueue()
+	if err !=nil {
+		log.Fatalf("failed to connect with nats: %s", err)
+	}
 	my := newServer()
 	my.Queue = q
 
