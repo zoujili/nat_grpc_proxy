@@ -1,12 +1,12 @@
 package nats_grpc_proxy
 
 //client nats to server nats
-const ClientNATSSubChannel  =  "delaware.sub"
-const ServerNATSPubChannel  =  "fitstation.pub"
+const ClientNATSSubChannel  =  "client.receive.upstream"
+const ServerNATSPubChannel  =  "server.push.downstream"
 
 //server nats to client nats
-const ServerNATSSubChannel  =  "fitstation.sub"
-const ClientNATSPubChannel  =  "delaware.pub"
+const ServerNATSSubChannel  =  "server.receive.upstream"
+const ClientNATSPubChannel  =  "client.push.downstream"
 
 
 
